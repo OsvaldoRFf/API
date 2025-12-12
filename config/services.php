@@ -17,7 +17,9 @@ return [
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
     ],
-
+    'restcountries' => [
+    'url' => env('RESTCOUNTRIES_URL', 'https://restcountries.com/v3.1'),
+],
     'resend' => [
         'key' => env('RESEND_API_KEY'),
     ],

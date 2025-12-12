@@ -3,7 +3,6 @@
 use Laravel\Jetstream\Features;
 use Laravel\Jetstream\Http\Middleware\AuthenticateSession;
 
-
 return [
 
     /*
@@ -63,10 +62,8 @@ return [
         // Features::profilePhotos(),
         // Features::api(),
         // Features::teams(['invitations' => true]),
-        \Laravel\Jetstream\Jetstream::hasTermsAndPrivacyPolicyFeature(),
+        Features::accountDeletion(),
     ],
-
-    'registration' => true,
 
     /*
     |--------------------------------------------------------------------------

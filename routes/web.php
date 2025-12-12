@@ -60,5 +60,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::get('/countries', [CountryController::class, 'index']);
 Route::get('/countries/{name}', [CountryController::class, 'show']);
+Route::get('/countries', [CountryController::class, 'index']);
+Route::get('/countries/{name}', [CountryController::class, 'show']);
 
 Route::get('/up', fn() => 'OK');

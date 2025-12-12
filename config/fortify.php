@@ -27,7 +27,11 @@ return [
     | of your password brokers setup in your "auth" configuration file.
     |
     */
-
+'features' => [
+    Features::registration(),
+    Features::resetPasswords(),
+    Features::emailVerification(),
+],
     'passwords' => 'users',
 
     /*

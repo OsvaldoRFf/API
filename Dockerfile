@@ -17,6 +17,6 @@ RUN npm install && npm run build
 RUN chmod -R 775 storage bootstrap/cache public/build \
     && chown -R www-data:www-data storage bootstrap/cache public/build
 
-EXPOSE 8080
+EXPOSE 9090
 
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=9090"]

@@ -42,4 +42,5 @@ RUN chmod -R 775 storage bootstrap/cache public/build \
 EXPOSE 9090
 
 # Ejecutar Laravel
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=9090"]
+CMD ["php", "-S", "0.0.0.0:9090", "-t", "public"]
+

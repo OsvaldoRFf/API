@@ -1,46 +1,35 @@
-FROM php:8.2-fpm
+FROM php:8.3-fpm
 
-# Dependencias del sistema
+# Instala dependencias del sistema
 RUN apt-get update && apt-get install -y \
-    git \
-    unzip \
-    libzip-dev \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    libpq-dev \
-    nodejs \
-    npm \
-    && docker-php-ext-install \
-        zip \
-        pdo \
-        pdo_mysql \
-        pdo_pgsql \
-    && apt-get clean \
+    git curl zip unzip libpq-dev libonig-dev libxml2-dev libzip-dev \
+    libpng-dev libjpeg-dev libfreetype6-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+# Instala extensiones PHP necesarias (¡incluyendo pdo_pgsql!
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo pdo_pgsql pgsql mbstring exif pcntl bcmath gd zip
 
-# Directorio de trabajo
+# Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Node.js
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
+
 WORKDIR /var/www/html
 
-# Copiar proyecto
 COPY . .
 
-# Dependencias PHP
-RUN composer install --no-dev --optimize-autoloader --prefer-dist
+RUN composer install --optimize-autoloader --no-dev --no-interaction
+RUN npm ci && npm run build
 
-# Frontend (Vite)
-RUN npm install && npm run build
+# Permisos
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Permisos Laravel
-RUN chmod -R 775 storage bootstrap/cache public/build \
-    && chown -R www-data:www-data storage bootstrap/cache public/build
+EXPOSE $PORT
 
-# Puerto Railway
-EXPOSE 9090
-
-# Ejecutar Laravel
-CMD ["php", "-S", "0.0.0.0:9090", "-t", "public"]
-
+CMD php artisan key:generate --force && \
+    php artisan migrate --force --no-interaction && \
+    php artisan serve --host=0.0.0.0 --port=${PORT:-9090}
